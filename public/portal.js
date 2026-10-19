@@ -131,7 +131,7 @@ function invitationForm(publicId, existing) {
   });
 }
 async function start() {
-  const edit = location.pathname.match(/^\/edit\/([A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/);
+  const edit = location.pathname.match(/^\/g\/([A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})\/edit$/);
   if (edit) return invitationForm(edit[1], await api(`/api/public/gifts/${edit[1]}/edit`));
   const activation = location.pathname.match(/^\/customize\/([A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/);
   if (activation) {
@@ -150,7 +150,7 @@ async function start() {
   return qrBatches();
 }
 start().catch((error) => {
-  const publicInvitation = /^\/(?:customize|edit)\//.test(location.pathname);
+  const publicInvitation = /^\/(?:customize\/|g\/[^/]+\/edit$)/.test(location.pathname);
   if (publicInvitation && error.status === 404) { location.replace("/thank-you"); return; }
   app.innerHTML = `<section class="card"><h1>${publicInvitation ? "Unable to open this invitation" : "Unable to open your workspace"}</h1><p class="error" role="alert">${escapeHtml(error.message)}</p>${publicInvitation ? "<p>Scan your QR again to check its link.</p>" : '<a href="/admin/login">Back to login</a>'}</section>`;
 });

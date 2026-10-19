@@ -143,14 +143,14 @@ function createApp(pool, config) {
   app.get("/", (req, res) => res.redirect("/admin/login"));
   app.get("/thank-you", (req, res) => res.sendFile(path.join(publicRoot, "thank-you.html")));
   app.get(["/admin/login", "/admin/dashboard", "/admin/qr-batches"], (req, res) => res.sendFile(path.join(publicRoot, "index.html")));
-  app.get(/^\/(?:customize|edit)\/(?:[A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/, (req, res) => res.sendFile(path.join(publicRoot, "index.html")));
+  app.get(/^(?:\/customize\/(?:[A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})|\/g\/(?:[A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})\/edit)$/, (req, res) => res.sendFile(path.join(publicRoot, "index.html")));
   app.use((req, res, next) => next(new v.HttpError(404, "Page not found.")));
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
     const expected = error instanceof v.HttpError;
     const badBody = error.type === "entity.parse.failed" || error.type === "entity.too.large";
     const status = expected ? error.status : badBody ? 400 : 500;
-    if (status === 404 && /^\/(?:g|customize|edit)\/[^/]+\/?$/.test(req.path)) return res.redirect("/thank-you");
+    if (status === 404 && /^\/(?:g|customize)\/[^/]+(?:\/edit)?\/?$/.test(req.path)) return res.redirect("/thank-you");
     const message = expected ? error.message : badBody ? "The request is invalid or too large." : "Something went wrong. Please try again; contact the administrator if it continues.";
     if (status >= 500) console.error("Request failed.", { method: req.method, route: req.route?.path?.toString() || "unmatched", code: error.code || "INTERNAL" });
     res.set("Cache-Control", "no-store").status(status);
