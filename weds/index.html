@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Your little keepsake</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./weds.css">
+  <script src="./shared/calendar.js" defer></script>
+  <script src="./gift.js" defer></script>
+  <script src="./weds.js" defer></script>
+</head>
+<body>
+  <main class="gift is-opening" id="gift">
+    <section class="hero" aria-label="A little moment of love">
+      <div class="opening-copy" id="opening-copy">
+        <div class="opening-names" id="opening-names" role="group" aria-label="Two names, one heart">
+          <p class="opening-partner partner-one" id="opening-partner-one"></p>
+          <div class="name-connection" aria-hidden="true">
+            <svg viewBox="0 0 300 72" class="connection-line">
+              <path class="heart-fill" d="M226 31C220 17 233 11 240 23C247 11 260 17 254 31C250 39 240 46 240 46S230 39 226 31Z"/>
+              <path class="heart-outline" pathLength="1" d="M5 39C6 25 22 16 37 21C53 26 60 45 78 43C85 42 89 37 93 32C87 43 83 54 89 51C96 47 103 35 105 31C99 44 97 55 104 51C112 47 117 35 118 31C117 43 121 44 127 38C139 24 146 32 136 38C132 41 127 41 125 39C120 50 129 56 140 48C150 41 158 28 164 16C172 0 182 1 176 12C171 22 157 30 151 36C140 47 141 56 148 52C155 48 160 36 158 35C153 34 145 55 152 63C162 75 187 52 196 37C204 22 193 28 193 35C192 43 206 46 199 51C193 56 187 51 191 49C199 54 211 49 223 46C231 44 236 45 240 46C230 39 226 34 226 31C220 17 233 11 240 23C247 11 260 17 254 31C250 39 240 46 240 46C256 49 272 24 287 25C297 25 299 35 292 39"/>
+            </svg>
+          </div>
+          <p class="opening-partner partner-two" id="opening-partner-two"></p>
+        </div>
+        <p class="opening-tagline">Two hearts. One beautiful story.</p>
+      </div>
+      <div class="opening-decoration" aria-hidden="true">
+        <span class="love-mote">&#9829;</span><span class="love-mote">&#9829;</span>
+        <span class="love-mote">&#9829;</span><span class="love-mote">&#9829;</span>
+        <span class="love-mote">&#9829;</span><span class="love-mote">&#9829;</span>
+        <span class="love-sparkle">&#10022;</span><span class="love-sparkle">&#10022;</span>
+        <span class="love-sparkle">&#10022;</span>
+      </div>
+      <div class="video-position" id="video-position">
+        <div class="video-surface" id="video-surface">
+          <video id="romantic-video" muted playsinline preload="auto"
+            aria-label="Radha and Krishna in a romantic animation"></video>
+          <img id="end-frame" class="end-frame" alt="Radha and Krishna in the animation's final frame" hidden>
+          <div class="floating-hearts" aria-hidden="true">
+            <span>&#9829;</span><span>&#9829;</span><span>&#9829;</span><span>&#9829;</span>
+          </div>
+        </div>
+      </div>
+      <div class="playback-fallback" id="playback-fallback" hidden>
+        <p id="playback-message" role="status"></p>
+        <button id="play" type="button">Play your little moment</button>
+        <button id="continue" type="button">Open the keepsake</button>
+      </div>
+    </section>
+
+    <div class="keepsake" id="keepsake" inert aria-hidden="true">
+      <section class="dedication">
+        <h1 id="names"></h1>
+      </section>
+
+      <div class="timer-group">
+      <p class="eyebrow together-label" id="wedding-status">Counting down to our wedding</p>
+      <time class="wedding-date" id="wedding-date"></time>
+      <section class="panel timer-panel" aria-labelledby="timer-heading">
+        <h2 class="visually-hidden" id="timer-heading">Time until our wedding day</h2>
+        <div class="timer" role="timer" aria-live="off" aria-labelledby="timer-heading">
+          <div class="time-unit"><span id="days">0</span><span class="unit-label">Days</span></div>
+          <div class="time-unit"><span id="hours">00</span><span class="unit-label">Hours</span></div>
+          <div class="time-unit"><span id="minutes">00</span><span class="unit-label">Minutes</span></div>
+          <div class="time-unit"><span id="seconds">00</span><span class="unit-label">Seconds</span></div>
+        </div>
+      </section>
+      </div>
+
+      <footer class="closing">
+        <div class="heart-divider" aria-hidden="true"><span></span>&#9825;<span></span></div>
+        <blockquote id="quote"></blockquote>
+      </footer>
+      <section class="panel venue-panel" id="venue" aria-labelledby="venue-heading" hidden>
+        <h2 class="eyebrow" id="venue-heading">Join us at the venue</h2>
+        <p>Your presence will make our celebration complete.</p>
+        <a class="venue-link" id="venue-link" target="_blank" rel="noopener noreferrer" hidden>Open venue in Maps</a>
+        <span class="blessings-badge" id="venue-blessings" hidden><span aria-hidden="true">&#9825;</span> With love &amp; blessings</span>
+      </section>
+    </div>
+    <p class="error-message" id="error" role="alert" hidden></p>
+    <noscript><p class="error-message">Please enable JavaScript to open this animated keepsake and its live counters.</p></noscript>
+  </main>
+</body>
+</html>
