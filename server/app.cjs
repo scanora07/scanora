@@ -78,6 +78,15 @@ function createApp(pool, config) {
   app.post("/api/public/gifts/:publicId/activate",
     rateLimit({ windowMs: 60000, limit: 30, message: { error: "Too many submissions. Try again in a minute." } }),
     async (req, res) => res.json(await gifts.activateGift(pool, v.publicId(req.params.publicId), v.giftInput(req.body), config.appUrl, config.databaseSchema)));
+  app.get("/api/public/gifts/:publicId/edit", async (req, res) => {
+    const id = v.publicId(req.params.publicId);
+    const row = (await pool.query(`SELECT names,to_char(occasion_date,'YYYY-MM-DD') AS occasion_date,venue_maps_url FROM ${giftsTable} WHERE public_id=$1 AND occasion_date IS NOT NULL AND expires_at > now()`, [id])).rows[0];
+    if (!row) throw new v.HttpError(404, "This invitation is not available.");
+    res.set("Cache-Control", "no-store").json({ names: row.names, occasionDate: row.occasion_date, venueMapsUrl: row.venue_maps_url });
+  });
+  app.put("/api/public/gifts/:publicId",
+    rateLimit({ windowMs: 60000, limit: 30, message: { error: "Too many submissions. Try again in a minute." } }),
+    async (req, res) => res.json(await gifts.updateGift(pool, v.publicId(req.params.publicId), v.giftInput(req.body), config.appUrl, config.databaseSchema)));
   app.get("/api/admin/qr-batches", auth.requireAdmin, async (req, res) => {
     const page = v.integer(Number(req.query.page || 1), "Page", 1, 100000);
     const batchId = req.query.batchId === undefined ? null : v.batchId(req.query.batchId);
@@ -134,14 +143,14 @@ function createApp(pool, config) {
   app.get("/", (req, res) => res.redirect("/admin/login"));
   app.get("/thank-you", (req, res) => res.sendFile(path.join(publicRoot, "thank-you.html")));
   app.get(["/admin/login", "/admin/dashboard", "/admin/qr-batches"], (req, res) => res.sendFile(path.join(publicRoot, "index.html")));
-  app.get(/^\/customize\/(?:[A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/, (req, res) => res.sendFile(path.join(publicRoot, "index.html")));
+  app.get(/^\/(?:customize|edit)\/(?:[A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/, (req, res) => res.sendFile(path.join(publicRoot, "index.html")));
   app.use((req, res, next) => next(new v.HttpError(404, "Page not found.")));
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
     const expected = error instanceof v.HttpError;
     const badBody = error.type === "entity.parse.failed" || error.type === "entity.too.large";
     const status = expected ? error.status : badBody ? 400 : 500;
-    if (status === 404 && /^\/(?:g|customize)\/[^/]+\/?$/.test(req.path)) return res.redirect("/thank-you");
+    if (status === 404 && /^\/(?:g|customize|edit)\/[^/]+\/?$/.test(req.path)) return res.redirect("/thank-you");
     const message = expected ? error.message : badBody ? "The request is invalid or too large." : "Something went wrong. Please try again; contact the administrator if it continues.";
     if (status >= 500) console.error("Request failed.", { method: req.method, route: req.route?.path?.toString() || "unmatched", code: error.code || "INTERNAL" });
     res.set("Cache-Control", "no-store").status(status);

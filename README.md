@@ -26,8 +26,9 @@ counts and ZIP downloads combine all valid cards assigned to that number.
 Old UUID batch IDs are preserved and remain downloadable.
 
 There are no shop logins, shop dashboards, credit deductions, payments,
-invitation editing or reset controls. Possession of an unused QR grants
+reset controls. Possession of an unused QR grants
 permission to customize it; keep unused QR images private until sold.
+After activation, anyone with /edit/<qr-id> can change the names, date and Maps link (no login; expiry is recalculated from the new date).
 Batch history and downloads remain available to the administrator.
 
 ## Preserved template

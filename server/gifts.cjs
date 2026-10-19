@@ -36,8 +36,19 @@ async function activateGift(pool, publicId, gift, appUrl, schema) {
   throw new HttpError(409, "This QR has already been customized. Open its invitation instead.");
 }
 
+async function updateGift(pool, publicId, gift, appUrl, schema) {
+  const giftsTable = tableName(schema, "gifts");
+  const expiry = calendar.startTimestamp(gift.occasionDate, null, "Asia/Kolkata").getTime() + 7 * 86400000;
+  if (expiry <= Date.now()) throw new HttpError(400, "This wedding date has already expired. Choose a date whose seven-day validity has not ended.");
+  const result = await pool.query(`UPDATE ${giftsTable} SET names=$2,occasion_date=$3,venue_maps_url=$4
+    WHERE public_id=$1 AND occasion_date IS NOT NULL AND expires_at > now()
+    RETURNING id`, [publicId, gift.names, gift.occasionDate, gift.venueMapsUrl || null]);
+  if (!result.rowCount) throw new HttpError(404, "This invitation is not available for editing.");
+  return { publicUrl: `${appUrl}/g/${publicId}` };
+}
+
 async function deleteExpired(pool, schema) {
   return pool.query(`DELETE FROM ${tableName(schema, "gifts")} WHERE expires_at <= now()`);
 }
 
-module.exports = { createBatch, activateGift, deleteExpired };
+module.exports = { createBatch, activateGift, updateGift, deleteExpired };

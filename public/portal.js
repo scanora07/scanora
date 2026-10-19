@@ -77,8 +77,9 @@ async function qrBatches(page = 1, batchId = "") {
     document.getElementById("batch-ready").innerHTML = `${batch.count} QR ${batch.count === 1 ? "card" : "cards"} created. <a href="${batch.downloadUrl}">Download ZIP</a>`;
   });
 }
-function invitationForm(publicId) {
-  app.innerHTML = `<section class="card simple-gift"><p class="eyebrow">Wedding invitation</p>
+function invitationForm(publicId, existing) {
+  const editing = Boolean(existing);
+  app.innerHTML = `<section class="card simple-gift"><p class="eyebrow">${editing ? "Edit invitation" : "Wedding invitation"}</p>
     <form id="invitation-form"><div class="fields">
     ${field("nameOne", "Mr", "text", 'required maxlength="30"')}
     ${field("nameTwo", "Mrs", "text", 'required maxlength="30"')}
@@ -89,7 +90,7 @@ function invitationForm(publicId) {
     </div></fieldset>
     ${field("venueMapsUrl", "Venue Maps link (optional)", "url", 'maxlength="2048" placeholder="https://maps.app.goo.gl/..."')}
     </div>
-    <p class="error" role="alert"></p><div class="actions"><button>Save and open invitation</button></div></form></section>`;
+    <p class="error" role="alert"></p><div class="actions"><button>${editing ? "Save changes" : "Save and open invitation"}</button></div></form></section>`;
   const form = document.getElementById("invitation-form");
   function updateDays() {
     const selected = form.elements.day.value;
@@ -101,13 +102,22 @@ function invitationForm(publicId) {
       return `<option value="${value}" ${value === selected ? "selected" : ""}>${index + 1}</option>`;
     }).join("");
   }
-  updateDays();
+  if (editing) {
+    const [year, month, day] = existing.occasionDate.split("-");
+    form.elements.nameOne.value = existing.names[0];
+    form.elements.nameTwo.value = existing.names[1];
+    form.elements.year.value = year;
+    form.elements.month.value = month;
+    updateDays();
+    form.elements.day.value = day;
+    form.elements.venueMapsUrl.value = existing.venueMapsUrl || "";
+  } else updateDays();
   form.elements.month.addEventListener("change", updateDays);
   form.elements.year.addEventListener("change", updateDays);
   bindForm("invitation-form", async (values) => {
     let saved;
     try {
-      saved = await api(`/api/public/gifts/${publicId}/activate`, { method: "POST", body: {
+      saved = await api(editing ? `/api/public/gifts/${publicId}` : `/api/public/gifts/${publicId}/activate`, { method: editing ? "PUT" : "POST", body: {
         names: [values.nameOne, values.nameTwo],
         occasionDate: `${values.year}-${values.month}-${values.day}`, venueMapsUrl: values.venueMapsUrl
       } });
@@ -121,6 +131,8 @@ function invitationForm(publicId) {
   });
 }
 async function start() {
+  const edit = location.pathname.match(/^\/edit\/([A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/);
+  if (edit) return invitationForm(edit[1], await api(`/api/public/gifts/${edit[1]}/edit`));
   const activation = location.pathname.match(/^\/customize\/([A-Za-z0-9_-]{8}|[A-Za-z0-9_-]{32})$/);
   if (activation) {
     const state = await api(`/api/public/gifts/${activation[1]}`);
@@ -138,7 +150,7 @@ async function start() {
   return qrBatches();
 }
 start().catch((error) => {
-  const publicInvitation = location.pathname.startsWith("/customize/");
+  const publicInvitation = /^\/(?:customize|edit)\//.test(location.pathname);
   if (publicInvitation && error.status === 404) { location.replace("/thank-you"); return; }
   app.innerHTML = `<section class="card"><h1>${publicInvitation ? "Unable to open this invitation" : "Unable to open your workspace"}</h1><p class="error" role="alert">${escapeHtml(error.message)}</p>${publicInvitation ? "<p>Scan your QR again to check its link.</p>" : '<a href="/admin/login">Back to login</a>'}</section>`;
 });
