@@ -57,7 +57,7 @@ button:focus-visible { outline: 2px solid var(--wine); outline-offset: 4px; }
 .is-opening .hero::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc((100% - 100vw) / 2); width: 100vw; background: #fff; pointer-events: none; }
 .is-opening .opening-copy { position: relative; opacity: 1; visibility: visible; flex: 1; padding: 24px 16px 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .is-opening .video-position { position: relative; z-index: 1; order: -1; width: 100%; height: auto; top: 0; left: 0; margin-top: 0; transform: none; overflow: clip; grid-template-columns: minmax(0, 1fr); }
-.is-opening .video-surface { width: min(100%, 560px, calc(46svh * 1074 / 1400)); aspect-ratio: 1074 / 1400; min-width: 0; justify-self: center; }
+.is-opening .video-surface { width: min(100%, 560px); aspect-ratio: 1074 / 1400; min-width: 0; justify-self: center; }
 
 .opening-decoration { display: none; position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .is-opening .opening-decoration { display: block; }
@@ -172,7 +172,7 @@ blockquote { font-family: var(--sans); font-size: 16px; font-weight: 500; font-s
   .is-opening .opening-copy { padding-top: 20px; }
 }
 
-.is-opening .opening-copy { padding: clamp(8px, 2svh, 24px) 12px clamp(16px, 3svh, 32px); justify-content: flex-start; }
+.is-opening .opening-copy { padding: clamp(8px, 2svh, 24px) 12px clamp(12px, 2.5svh, 28px); justify-content: space-evenly; gap: clamp(6px, 1.5svh, 18px); }
 .is-opening .opening-partner { font-size: clamp(34px, min(11vw, 7svh), 76px); }
 .is-opening .name-connection { height: clamp(40px, 7svh, 64px); margin: clamp(4px, 1.2svh, 12px) auto; }
 .is-opening .opening-tagline { font-size: clamp(16px, 2.8svh, 22px); margin-top: clamp(10px, 2svh, 22px); padding: 0 8px; text-wrap: balance; }
